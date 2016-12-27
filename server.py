@@ -46,8 +46,9 @@ class SearchHandler(tornado.web.RequestHandler):
             url = UrlUtil().getUrl(dic, token)
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
-            body = json.loads(response.body)
+            body = response.body
             redisHandler.setValue(key, body)
+        body = json.loads(body)
         self.write(body)
         self.finish()
 
@@ -79,8 +80,9 @@ class PackageHandler(tornado.web.RequestHandler):
             url = UrlUtil().getUrl(dic, token)
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
-            body = json.loads(response.body)
+            body = response.body
             redisHandler.setValue(key, body)
+        body = json.loads(body)
         self.write(body)
         self.finish()
 
@@ -112,8 +114,9 @@ class DocidHandler(tornado.web.RequestHandler):
             url = UrlUtil().getUrl(dic, token)
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
-            body = json.loads(response.body)
+            body = response.body
             redisHandler.setValue(key, body)
+        body = json.loads(body)
         self.write(body)
         self.finish()
 
