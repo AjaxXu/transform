@@ -7,6 +7,17 @@ import hashlib
 import urllib
 import base64
 
+def singleton(cls, *args, **kw):
+    instances = {}
+
+    def _singleton():
+        if cls not in instances:
+            instances[cls] = cls(*args, **kw)
+        return instances[cls]
+
+    return _singleton
+
+@singleton
 class EncryptUtil(object):
     def get_md5_value(self, src):
         myMd5 = hashlib.md5()
@@ -34,6 +45,7 @@ class EncryptUtil(object):
     def decrypt_token(self, data):
         return self._cipher().decrypt(data)
 
+@singleton
 class UrlUtil(object):
     def getUrl(self, dic, token):
         encode = base64.b64encode(EncryptUtil().encrypt_token(token))
