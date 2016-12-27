@@ -8,7 +8,7 @@ from utils import singleton
 
 @singleton
 class RedisHandler(object):
-    startup_nodes = [{"host": "127.0.0.1", "port": "7000"}]
+    startup_nodes = [{"host": "127.0.0.1", "port": "6379"}]
     rc = StrictRedisCluster(startup_nodes=startup_nodes, decode_responses=True)
 
     def getValue(self, key):
