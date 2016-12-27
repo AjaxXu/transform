@@ -26,7 +26,7 @@ class SearchHandler(tornado.web.RequestHandler):
     def get(self):
         word = self.get_argument('word').encode("utf-8")
         redisHandler = RedisHandler()
-        key = EncryptUtil.get_md5_value('search' + word)
+        key = EncryptUtil().get_md5_value('search' + word)
         body = redisHandler.getValue(key)
         if body == None :
             dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app',
@@ -39,7 +39,7 @@ class SearchHandler(tornado.web.RequestHandler):
             sign = '80E04B6A82A481489CD4135729283A96'
             action = 'search'
             token = '862879000296806'
-            dic['word'] = word.encode("utf-8")
+            dic['word'] = word
             dic['sign'] = sign
             dic['action'] = action
             dic['format'] = 'json'
@@ -56,9 +56,9 @@ class PackageHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
-        package = urllib.unquote(self.get_argument('package'))
+        package = self.get_argument('package').encode("utf-8")
         redisHandler = RedisHandler()
-        key = EncryptUtil.get_md5_value('package' + package)
+        key = EncryptUtil().get_md5_value('package' + package)
         body = redisHandler.getValue(key)
         if body == None:
             dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app', 'req_biz': '1',
@@ -75,7 +75,7 @@ class PackageHandler(tornado.web.RequestHandler):
             dic['sign'] = sign
             dic['action'] = action
             dic['format'] = 'json'
-            dic['package'] = package.encode("utf-8")
+            dic['package'] = package
             url = UrlUtil().getUrl(dic, token)
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
@@ -89,9 +89,9 @@ class DocidHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
-        docid = urllib.unquote(self.get_argument('docid'))
+        docid = self.get_argument('docid').encode("utf-8")
         redisHandler = RedisHandler()
-        key = EncryptUtil.get_md5_value('docid' + docid)
+        key = EncryptUtil().get_md5_value('docid' + docid)
         body = redisHandler.getValue(key)
         if body == None:
             dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app', 'req_biz': '1',
@@ -105,7 +105,7 @@ class DocidHandler(tornado.web.RequestHandler):
             sign = 'D144E2E3364B275568372FFE80DE133E'
             action = 'appdetail'
             token = '862879000296806'
-            dic['docid'] = docid.encode("utf-8")
+            dic['docid'] = docid
             dic['sign'] = sign
             dic['action'] = action
             dic['format'] = 'json'
