@@ -8,8 +8,8 @@ from utils import singleton
 
 @singleton
 class RedisHandler(object):
-    startup_nodes = [{"host": "127.0.0.1", "port": "7000"}]
-    rc = StrictRedisCluster(startup_nodes=startup_nodes, decode_responses=True)
+    cluster = {'nodes':{'node_1':{"host": "127.0.0.1", "port": "7000"}}}
+    rc = StrictRedisCluster(cluster=cluster, db=0, mastersonly=True)
 
     def getValue(self, key):
         timeout = self.rc.ttl(key)
