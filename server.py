@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# encoding: utf-8
+
 import tornado.httpserver
 import tornado.ioloop
 import tornado.web
@@ -9,6 +12,7 @@ import os.path
 import urllib
 import urllib2
 import json
+from utils import UrlUtil
 from login import LoginHandler, LogoutHandler, WelcomeHandler
 
 from tornado.options import define, options
@@ -19,8 +23,24 @@ class SearchHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        word = self.get_argument('word')
+        dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app',
+               'bdi_loc': '5YyX5Lqs5biC', 'bdi_uip': '113.142.37.167', 'bdi_bear': 'WF', 'resolution': '720_1280',
+               'dpi': '320', 'apilevel': '18', 'os_version': '4.3', 'brand': 'OPSSON', 'model': 'Q1', 'pver': '3',
+               'uid': '712ACBBE63076AEC76BE860AQDEWE880', 'pn': '0', 'rn': '10',
+               'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
+               'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
+               'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
+        sign = '80E04B6A82A481489CD4135729283A96'
+        action = 'search'
+        token = '862879000296806'
+        dic['word'] = word.encode("utf-8")
+        dic['sign'] = sign
+        dic['action'] = action
+        dic['format'] = 'json'
+        url = UrlUtil().getUrl(dic, token)
         client = tornado.httpclient.AsyncHTTPClient()
-        response = yield tornado.gen.Task(client.fetch,"http://m.baidu.com/api?apilevel=19&bdi_bear=WF&bdi_cid=9177265119920&bdi_imei=LRJ60LZNQgHG8DYc9BOFng%253D%253D&bdi_imsi=NWEzYjI4N2YyYjEzYmVmOA%3D%3D&bdi_loc=5YyX5Lqs5biC&bdi_mac=YWM6YmM6MzI6OWE6YmY6MzM%3D&bdi_uip=113.142.37.167&brand=OPSSON&cname=WS%3AYY&cpack=monkey&ct=1452249585&cver=2.0&dpi=320&from=1019356a&model=Q1&os_version=4.3&pn=0&pver=3&resolution=720_1280&rn=10&token=qqllqyfbx&type=app&uid=712ACBBE63076AEC76BE860AQDEWE880&word=%E5%BE%AE%E4%BF%A1&sign=E85A6EF76190D4191F20F66F98670B33&action=search&format=json")
+        response = yield tornado.gen.Task(client.fetch,url)
         body = json.loads(response.body)
         self.write(body)
         self.finish()
@@ -30,8 +50,25 @@ class PackageHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        package = urllib.unquote(self.get_argument('package'))
+        dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app', 'req_biz': '1',
+               'bdi_loc': '5YyX5Lqs5biC', 'bdi_uip': '113.142.37.167', 'bdi_bear': 'WF', 'resolution': '720_1280',
+               'dpi': '320', 'apilevel': '18', 'os_version': '4.3', 'brand': 'OPSSON', 'model': 'Q1', 'pver': '3',
+               'uid': '712ACBBE63076AEC76BE860AQDEWE880', 'ua': 'android4.3', 'show_time': '1452249585',
+               'refer_tag': 'board',
+               'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
+               'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
+               'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
+        sign = 'FDA42A26A5DE26342E84B99AA657FC15'
+        action = 'appdetail'
+        token = '862879000296806'
+        dic['sign'] = sign
+        dic['action'] = action
+        dic['format'] = 'json'
+        dic['package'] = package.encode("utf-8")
+        url = UrlUtil().getUrl(dic, token)
         client = tornado.httpclient.AsyncHTTPClient()
-        response = yield tornado.gen.Task(client.fetch,"http://m.baidu.com/api?apilevel=19&bdi_bear=WF&bdi_cid=9177265119920&bdi_imei=LRJ60LZNQgHG8DYc9BOFng%253D%253D&bdi_imsi=NWEzYjI4N2YyYjEzYmVmOA%3D%3D&bdi_loc=5YyX5Lqs5biC&bdi_mac=YWM6YmM6MzI6OWE6YmY6MzM%3D&bdi_uip=113.142.37.167&brand=OPSSON&cname=WS%3AYY&cpack=monkey&ct=1452249585&cver=2.0&dpi=320&from=1019356a&model=Q1&os_version=4.3&package=com.tencent.mm&pver=3&refer_tag=rec&req_biz=1&resolution=720_1280&show_time=1452249585&token=qqllqyfbx&type=app&ua=android4.3&uid=712ACBBE63076AEC76BE860AQDEWE880&sign=C0680B0DCBAA812B3204377D5A4F18B5&action=appdetail&format=json")
+        response = yield tornado.gen.Task(client.fetch,url)
         body = json.loads(response.body)
         self.write(body)
         self.finish()
@@ -41,8 +78,25 @@ class DocidHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
     def get(self):
+        docid = urllib.unquote(self.get_argument('docid'))
+        dic = {'from': '1019356a', 'token': 'qqllqyfbx', 'type': 'app', 'req_biz': '1',
+               'bdi_loc': '5YyX5Lqs5biC', 'bdi_uip': '113.142.37.167', 'bdi_bear': 'WF', 'resolution': '720_1280',
+               'dpi': '320', 'apilevel': '18', 'os_version': '4.3', 'brand': 'OPSSON', 'model': 'Q1', 'pver': '3',
+               'uid': '712ACBBE63076AEC76BE860AQDEWE880', 'ua': 'android4.3', 'show_time': '1452249585',
+               'refer_tag': 'board',
+               'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
+               'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
+               'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
+        sign = 'D144E2E3364B275568372FFE80DE133E'
+        action = 'appdetail'
+        token = '862879000296806'
+        dic['docid'] = docid.encode("utf-8")
+        dic['sign'] = sign
+        dic['action'] = action
+        dic['format'] = 'json'
+        url = UrlUtil().getUrl(dic, token)
         client = tornado.httpclient.AsyncHTTPClient()
-        response = yield tornado.gen.Task(client.fetch,"http://m.baidu.com/api?apilevel=19&bdi_bear=WF&bdi_cid=9177265119920&bdi_imei=LRJ60LZNQgHG8DYc9BOFng%253D%253D&bdi_imsi=NWEzYjI4N2YyYjEzYmVmOA%3D%3D&bdi_loc=5YyX5Lqs5biC&bdi_mac=YWM6YmM6MzI6OWE6YmY6MzM%3D&bdi_uip=113.142.37.167&brand=OPSSON&cname=WS%3AYY&cpack=monkey&ct=1452249585&cver=2.0&docid=10589832&dpi=320&from=1019356a&model=Q1&os_version=4.3&pver=3&refer_tag=rec&req_biz=1&resolution=720_1280&show_time=1452249585&token=qqllqyfbx&type=app&ua=android4.3&uid=712ACBBE63076AEC76BE860AQDEWE880&sign=316B977B1D1E811B18DBC5855094C525&action=appdetail&format=json")
+        response = yield tornado.gen.Task(client.fetch,url)
         body = json.loads(response.body)
         self.write(body)
         self.finish()
