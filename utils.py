@@ -60,3 +60,13 @@ class UrlUtil(object):
         # url = urllib.quote(url)
         url = url[:-1]
         return url
+
+@singleton
+class EncodeUtil(object):
+    def unicodeToStr(self, value):
+        if isinstance(value, unicode):
+            try:
+                return value.encode("utf-8")
+            except UnicodeEncodeError:
+                pass
+        return value

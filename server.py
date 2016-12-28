@@ -12,7 +12,7 @@ import os.path
 import urllib
 import urllib2
 import json
-from utils import UrlUtil, EncryptUtil
+from utils import UrlUtil, EncryptUtil, EncodeUtil
 from handler import RedisHandler
 from login import LoginHandler, LogoutHandler, WelcomeHandler
 
@@ -48,7 +48,7 @@ class SearchHandler(tornado.web.RequestHandler):
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body
             redisHandler.setValue(key, body)
-        body = json.loads(body)
+        body = json.loads(EncodeUtil().unicodeToStr(body))
         self.write(body)
         self.finish()
 
@@ -82,7 +82,7 @@ class PackageHandler(tornado.web.RequestHandler):
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body
             redisHandler.setValue(key, body)
-        body = json.loads(body)
+        body = json.loads(EncodeUtil().unicodeToStr(body))
         self.write(body)
         self.finish()
 
@@ -116,7 +116,7 @@ class DocidHandler(tornado.web.RequestHandler):
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body
             redisHandler.setValue(key, body)
-        body = json.loads(body)
+        body = json.loads(EncodeUtil().unicodeToStr(body))
         self.write(body)
         self.finish()
 
