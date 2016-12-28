@@ -36,14 +36,9 @@ class SearchHandler(tornado.web.RequestHandler):
                    'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
                    'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
                    'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
-            sign = '80E04B6A82A481489CD4135729283A96'
-            action = 'search'
             token = '862879000296806'
             dic['word'] = word
-            dic['sign'] = sign
-            dic['action'] = action
-            dic['format'] = 'json'
-            url = UrlUtil().getUrl(dic, token)
+            url = UrlUtil().getUrl(dic, token, 'search', 'json')
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body
@@ -70,14 +65,9 @@ class PackageHandler(tornado.web.RequestHandler):
                    'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
                    'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
                    'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
-            sign = 'FDA42A26A5DE26342E84B99AA657FC15'
-            action = 'appdetail'
             token = '862879000296806'
-            dic['sign'] = sign
-            dic['action'] = action
-            dic['format'] = 'json'
             dic['package'] = package
-            url = UrlUtil().getUrl(dic, token)
+            url = UrlUtil().getUrl(dic, token, 'appdetail', 'json')
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body
@@ -104,14 +94,9 @@ class DocidHandler(tornado.web.RequestHandler):
                    'bdi_cid': '9177265119920', 'bdi_mac': 'YWM6YmM6MzI6OWE6YmY6MzM=',
                    'bdi_imsi': 'NWEzYjI4N2YyYjEzYmVmOA==',
                    'ct': '1452249585', 'cname': 'WS', 'cver': '2.0', 'cpack': 'monkey'}
-            sign = 'D144E2E3364B275568372FFE80DE133E'
-            action = 'appdetail'
             token = '862879000296806'
             dic['docid'] = docid
-            dic['sign'] = sign
-            dic['action'] = action
-            dic['format'] = 'json'
-            url = UrlUtil().getUrl(dic, token)
+            url = UrlUtil().getUrl(dic, token, 'appdetail', 'json')
             client = tornado.httpclient.AsyncHTTPClient()
             response = yield tornado.gen.Task(client.fetch,url)
             body = response.body

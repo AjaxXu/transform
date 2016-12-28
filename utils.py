@@ -47,18 +47,20 @@ class EncryptUtil(object):
 
 @singleton
 class UrlUtil(object):
-    def getUrl(self, dic, token):
+    def getUrl(self, dic, token, action, formattype):
         encode = base64.b64encode(EncryptUtil().encrypt_token(token))
         encode = urllib.quote(encode)
         dic['bdi_imei'] = encode
         for k in dic.keys():
             dic[k] = urllib.quote(dic[k])
         dicsort = sorted(dic.keys())
-        url = 'http://m.baidu.com/api?'
+        url = ''
         for app_id in dicsort:
             url = url + app_id + '=' + dic[app_id] + '&'
-        # url = urllib.quote(url)
         url = url[:-1]
+        sign = EncryptUtil().get_md5_value(url).upper()
+        url = url + '&sign=' + sign + '&' + 'action=' + action + '&' + 'format=' + formattype
+        url = 'http://m.baidu.com/api?' + url
         return url
 
 @singleton
