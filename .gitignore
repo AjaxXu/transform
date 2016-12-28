@@ -3,3 +3,6 @@
 logs/
 .idea/
 .git/
+*.rdb
+rdb/
+run/
