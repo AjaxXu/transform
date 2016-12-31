@@ -6,7 +6,7 @@ import tornado.gen
 
 import os.path
 from login import LoginHandler, LogoutHandler, WelcomeHandler
-from handler import SearchHandler, PackageHandler, DocidHandler
+from handler import SearchHandler, PackageHandler, DocidHandler, DownloadHandler
 
 from tornado.options import define, options
 define("port", default=8000, help="run on the given port", type=int)
@@ -27,6 +27,7 @@ if __name__ == "__main__":
         (r'/search', SearchHandler),
         (r'/package', PackageHandler),
         (r'/docid', DocidHandler),
+        (r'/download', DownloadHandler),
         (r'/modify', WelcomeHandler),
         (r'/login', LoginHandler),
         (r'/logout', LogoutHandler)
