@@ -4,8 +4,6 @@ __author__ = 'louis'
 
 from Crypto.Cipher import AES
 import hashlib
-import urllib
-import base64
 
 def singleton(cls, *args, **kw):
     instances = {}
@@ -45,23 +43,6 @@ class EncryptUtil(object):
     def decrypt_token(self, data):
         return self._cipher().decrypt(data)
 
-@singleton
-class UrlUtil(object):
-    def getUrl(self, dic, token, action, formattype):
-        encode = base64.b64encode(EncryptUtil().encrypt_token(token))
-        encode = urllib.quote(encode)
-        dic['bdi_imei'] = encode
-        for k in dic.keys():
-            dic[k] = urllib.quote(dic[k])
-        dicsort = sorted(dic.keys())
-        url = ''
-        for app_id in dicsort:
-            url = url + app_id + '=' + dic[app_id] + '&'
-        url = url[:-1]
-        sign = EncryptUtil().get_md5_value(url).upper()
-        url = url + '&sign=' + sign + '&' + 'action=' + action + '&' + 'format=' + formattype
-        url = 'http://m.baidu.com/api?' + url
-        return url
 
 @singleton
 class EncodeUtil(object):
