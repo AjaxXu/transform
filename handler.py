@@ -41,8 +41,8 @@ class RedisHandler(object):
 class BaseHandler(tornado.web.RequestHandler):
     @tornado.web.asynchronous
     @tornado.gen.engine
-    def request_body(self, args, action, token, request_url='http://m.baidu.com/api?'):
-        encode = base64.b64encode(EncryptUtil().encrypt_token(token))
+    def request_body(self, args, action, imei, request_url='http://m.baidu.com/api?'):
+        encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
         encode = urllib.quote(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
@@ -99,8 +99,8 @@ class SearchHandler(BaseHandler):
 
     @use_args(search_args)
     def get(self, args):
-        token = '862879000296806'
-        self.request_body(args, 'search', token)
+        imei = '34ad436c2779947f'
+        self.request_body(args, 'search', imei)
 
 
 # package
@@ -127,6 +127,7 @@ class PackageHandler(BaseHandler):
         'uid': fields.Str(missing='712ACBBE63076AEC76BE860AQDEWE880'),
         'bdi_mac': fields.Str(missing='YWM6YmM6MzI6OWE6YmY6MzM='),
         'bdi_cid': fields.Str(missing='9177265119920'),
+        # 'bdi_imsi': fields.Str(missing='34ad436c2779947f'),
         'bdi_imsi': fields.Str(missing='NWEzYjI4N2YyYjEzYmVmOA=='),
         'ct': fields.Str(missing='1452249585'),
         'cname': fields.Str(missing='WS'),
@@ -136,8 +137,8 @@ class PackageHandler(BaseHandler):
 
     @use_args(package_args)
     def get(self, args):
-        token = '862879000296806'
-        # token = self.get_argument('token').encode("utf-8")
+        imei = '34ad436c2779947f'
+        # imei = self.get_argument('bdi_imei').encode("utf-8")
         # encode = base64.b64encode(EncryptUtil().encrypt_token(token))
         # encode = urllib.quote(encode)
         # args['bdi_imei'] = encode
@@ -160,7 +161,7 @@ class PackageHandler(BaseHandler):
         #     body = response.body
         #     redisHandler.setValue(sign, body)
         # body = json.loads(EncodeUtil().unicodeToStr(body))
-        self.request_body(args, 'appdetail', token)
+        self.request_body(args, 'appdetail', imei)
 
 
 # Docid
@@ -196,8 +197,8 @@ class DocidHandler(BaseHandler):
 
     @use_args(docid_args)
     def get(self, args):
-        token = '862879000296806'
-        self.request_body(args, 'appdetail', token)
+        imei = '34ad436c2779947f'
+        self.request_body(args, 'appdetail', imei)
 
 class Top10WHandler(tornado.web.RequestHandler):
     download_args = {
@@ -265,10 +266,11 @@ class DownloadHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     @use_args(download_args)
     def get(self, args):
-        token = '862879000296806'
+        # token = '862879000296806'
+        imei = '34ad436c2779947f'
         download_url = self.get_argument('download_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
-        encode = base64.b64encode(EncryptUtil().encrypt_token(token))
+        encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
         encode = urllib.quote(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
@@ -316,10 +318,11 @@ class DownloadCallbackHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     @use_args(callback_args)
     def get(self, args):
-        token = '862879000296806'
+        # token = '862879000296806'
+        imei = '34ad436c2779947f'
         callback_url = self.get_argument('callback_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
-        encode = base64.b64encode(EncryptUtil().encrypt_token(token))
+        encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
         encode = urllib.quote(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
