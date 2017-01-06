@@ -33,9 +33,9 @@ class RedisHandler(object):
             return result
         return None
 
-    def setValue(self, key, value):
+    def setValue(self, key, value, time=60):
         self.rc.set(key, value)
-        self.rc.expire(key, 60)
+        self.rc.expire(key, time)
 
 
 class BaseHandler(tornado.web.RequestHandler):
@@ -99,7 +99,10 @@ class SearchHandler(BaseHandler):
 
     @use_args(search_args)
     def get(self, args):
-        imei = '34ad436c2779947f'
+        try:
+            imei = self.get_argument('bdi_imei').encode("utf-8")
+        except:
+            imei = '34ad436c2779947f'
         self.request_body(args, 'search', imei)
 
 
@@ -137,8 +140,10 @@ class PackageHandler(BaseHandler):
 
     @use_args(package_args)
     def get(self, args):
-        imei = '34ad436c2779947f'
-        # imei = self.get_argument('bdi_imei').encode("utf-8")
+        try:
+            imei = self.get_argument('bdi_imei').encode("utf-8")
+        except:
+            imei = '34ad436c2779947f'
         # encode = base64.b64encode(EncryptUtil().encrypt_token(token))
         # encode = urllib.quote(encode)
         # args['bdi_imei'] = encode
@@ -197,7 +202,10 @@ class DocidHandler(BaseHandler):
 
     @use_args(docid_args)
     def get(self, args):
-        imei = '34ad436c2779947f'
+        try:
+            imei = self.get_argument('bdi_imei').encode("utf-8")
+        except:
+            imei = '34ad436c2779947f'
         self.request_body(args, 'appdetail', imei)
 
 class Top10WHandler(tornado.web.RequestHandler):
@@ -205,9 +213,9 @@ class Top10WHandler(tornado.web.RequestHandler):
         'from': fields.Str(required=True, missing='1019356a'),
         'token': fields.Str(required=True, missing='qqllqyfbx'),
         'type': fields.Str(required=True, missing='app'),
-        'rt': fields.Str(missing='1452249585'),
-        'pver': fields.Str(missing='3'),
-        'page': fields.Str(missing='1'),
+        'rt': fields.Str(required=True, missing='1452249585'),
+        'pver': fields.Str(required=True, missing='3'),
+        'page': fields.Str(required=True, missing='1'),
         'listtype': fields.Str(missing='all'),
     }
 
@@ -215,30 +223,35 @@ class Top10WHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     @use_args(download_args)
     def get(self, args):
-        # srt = 'f0265206c8acb23d21c28418'
-        srt = self.get_argument('srt').encode("utf-8")
-        signsrc = args['from']+args['token']+args['rt']+srt
-        sign = EncryptUtil().get_md5_value(signsrc)
-        args['sign'] = sign
-        for k in args.keys():
-            args[k] = urllib.quote(EncodeUtil().unicodeToStr(args[k]))
-        dicsort = sorted(args.keys())
-        url = ''
-        for app_id in dicsort:
-            url = url + app_id + '=' + args[app_id] + '&'
-        url = url[:-1]
+        try:
+            keystring = args['from'] + args['token'] + args['type'] + args['pver'] + args['page'] + args['listtype']
+            key = EncryptUtil().get_md5_value(keystring)
+            redisHandler = RedisHandler()
+            body = redisHandler.getValue(key)
+            if body == None:
+                # srt = 'f0265206c8acb23d21c28418'
+                srt = self.get_argument('srt').encode("utf-8")
+                signsrc = args['from']+args['token']+args['rt']+srt
+                sign = EncryptUtil().get_md5_value(signsrc)
+                args['sign'] = sign
+                for k in args.keys():
+                    args[k] = urllib.quote(EncodeUtil().unicodeToStr(args[k]))
+                dicsort = sorted(args.keys())
+                url = ''
+                for app_id in dicsort:
+                    url = url + app_id + '=' + args[app_id] + '&'
+                url = url[:-1]
 
-        redisHandler = RedisHandler()
-        body = redisHandler.getValue(sign)
-        if body == None:
-            url = url + '&format=json'
-            url = 'http://m.baidu.com/api?action=topapps' + '&' + url
-            client = tornado.httpclient.AsyncHTTPClient()
-            response = yield tornado.gen.Task(client.fetch, url)
-            body = response.body
-            redisHandler.setValue(sign, body)
-        body = json.loads(EncodeUtil().unicodeToStr(body))
-        self.finish(json.dumps(body))
+                url = url + '&format=json'
+                url = 'http://m.baidu.com/api?action=topapps' + '&' + url
+                client = tornado.httpclient.AsyncHTTPClient()
+                response = yield tornado.gen.Task(client.fetch, url)
+                body = response.body
+                redisHandler.setValue(key, body, 3600)
+            body = json.loads(EncodeUtil().unicodeToStr(body))
+            self.finish(json.dumps(body))
+        except Exception as e:
+            self.finish({'result':'Error', 'message':e.message})
 
 
 class DownloadHandler(tornado.web.RequestHandler):
@@ -266,8 +279,10 @@ class DownloadHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     @use_args(download_args)
     def get(self, args):
-        # token = '862879000296806'
-        imei = '34ad436c2779947f'
+        try:
+            imei = self.get_argument('bdi_imei').encode("utf-8")
+        except:
+            imei = '34ad436c2779947f'
         download_url = self.get_argument('download_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
         encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
@@ -318,8 +333,10 @@ class DownloadCallbackHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     @use_args(callback_args)
     def get(self, args):
-        # token = '862879000296806'
-        imei = '34ad436c2779947f'
+        try:
+            imei = self.get_argument('bdi_imei').encode("utf-8")
+        except:
+            imei = '34ad436c2779947f'
         callback_url = self.get_argument('callback_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
         encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
