@@ -43,7 +43,7 @@ class BaseHandler(tornado.web.RequestHandler):
     @tornado.gen.engine
     def request_body(self, args, action, imei, request_url='http://m.baidu.com/api?'):
         encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
-        encode = urllib.quote(encode)
+        encode = urllib.quote_plus(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
             args[k] = urllib.quote(EncodeUtil().unicodeToStr(args[k]))
@@ -244,14 +244,16 @@ class Top10WHandler(tornado.web.RequestHandler):
 
                 url = url + '&format=json'
                 url = 'http://m.baidu.com/api?action=topapps' + '&' + url
+                print url
                 client = tornado.httpclient.AsyncHTTPClient()
                 response = yield tornado.gen.Task(client.fetch, url)
                 body = response.body
+                print body, type(body)
                 redisHandler.setValue(key, body, 3600)
             body = json.loads(EncodeUtil().unicodeToStr(body))
-            self.finish(json.dumps(body))
+            self.finish(json.dumps({'code':200, 'body':body}))
         except Exception as e:
-            self.finish({'result':'Error', 'message':e.message})
+            self.finish({'code':400, 'message':e.message})
 
 
 class DownloadHandler(tornado.web.RequestHandler):
@@ -286,7 +288,7 @@ class DownloadHandler(tornado.web.RequestHandler):
         download_url = self.get_argument('download_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
         encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
-        encode = urllib.quote(encode)
+        encode = urllib.quote_plus(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
             args[k] = urllib.quote(EncodeUtil().unicodeToStr(args[k]))
@@ -340,7 +342,7 @@ class DownloadCallbackHandler(tornado.web.RequestHandler):
         callback_url = self.get_argument('callback_url').encode("utf-8")
         # download_url = 'http://m.baidu.com/api?action=redirect&token=qqllqyfbx&from=1019356a&type=app&dltype=new&refid=1394207537&tj=soft_10589832_2786482313_%E5%BE%AE%E4%BF%A1&refp=action_search@query_%E5%BE%AE%E4%BF%A1&blink=e22d687474703a2f2f612e67646f776e2e62616964752e636f6d2f646174612f7769736567616d652f373866623563353066663865383330662f77656978696e5f3936302e61706b3f66726f6d3d61313130315a58&crversion=1'
         encode = base64.b64encode(EncryptUtil().encrypt_token(imei))
-        encode = urllib.quote(encode)
+        encode = urllib.quote_plus(encode)
         args['bdi_imei'] = encode
         for k in args.keys():
             args[k] = urllib.quote(EncodeUtil().unicodeToStr(args[k]))
